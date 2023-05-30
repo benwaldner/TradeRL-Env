@@ -1,6 +1,6 @@
 *.pkl
 *.npy
-*.csv
+
 test.py
 test*.py
 
