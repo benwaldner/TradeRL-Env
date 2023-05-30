@@ -41,7 +41,7 @@ if __name__ == "__main__":
     # Create the Training Environment
     train_env = ForexEnvV2(
         df=bars[:train_size], window_size=config['window_size'], unit_side='right',
-        point = point, bar_limit=config['bar_limit'], spread=spread, 
+        point = point, bar_limit=config['bar_limit'], spread=spread, trade_fee=config['service_fee'],
         symbol=config["symbol"], normalise=1.0, normalise_path=f'data/{config["symbol"]}_scaler.pkl')
 
     # Start the Learning Process
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     eval_env = ForexEnvV2(
         df=bars[train_size:], window_size=config['window_size'], unit_side='right',
-        point = point, bar_limit=config['bar_limit'], spread=spread, 
+        point = point, bar_limit=config['bar_limit'], spread=spread, trade_fee=config['service_fee'],
         symbol=config["symbol"], normalise=True, normalise_path=f'data/{config["symbol"]}_scaler.pkl')
     eval_env.set_model(model)
     mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=1, deterministic=True)

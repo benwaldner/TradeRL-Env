@@ -8,7 +8,7 @@ from util.ta import extract_features
 
 class ForexEnv(TradingEnv):
 
-    def __init__(self, df, window_size, symbol, unit_side='left', point=10000, spread=0.0003, bar_limit=None, render_mode=None, normalise=None, normalise_path=None):
+    def __init__(self, df, window_size, symbol, unit_side='left', point=10000, spread=0.0003, trade_fee=0.00001, bar_limit=None, render_mode=None, normalise=None, normalise_path=None):
         assert unit_side.lower() in ['left', 'right']
         self.normalise = normalise
         self.normalise_path = normalise_path
@@ -16,7 +16,7 @@ class ForexEnv(TradingEnv):
         self.bar_limit = bar_limit
         super().__init__(df=df, window_size=window_size, symbol=symbol, render_mode=render_mode, point=point, spread=spread)
 
-        self.trade_fee = 0.0003  # unit
+        self.trade_fee = trade_fee  # unit
 
 
     def _process_data(self):
