@@ -1,4 +1,4 @@
-# Forex Reinforcement Learning Environments
+# Trading Reinforcement Learning Environments
 
 A collection of multiple Forex Reinforcement Learning Environments originated from [AminHP](https://github.com/AminHP).
 
