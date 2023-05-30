@@ -1,0 +1,28 @@
+# ---------- Example Configuration for Collection 1 & 2 ---------- #
+
+# The Symbol Name
+symbol: 'EURUSD'
+
+# The Path to the Bar Data
+data: './data/EURUSD_D1.csv'
+
+# The Point of the Symbol, such as 10000 for EURUSD, 100 for USDJPY, 10 for XAUUSD
+point: 10000
+
+# The Spread of the Symbol in pips
+# EURUSD: 0.4 = 0.4/10000 = 0.00004
+spread: 0.4
+
+# The Training & Testing Split Ratio
+# 0.7 = 70% training data
+split_ratio: 0.7
+
+# How many repeats to learn from the training environment
+epochs: 1
+
+# The Timeseries Window-Size for each observation
+window_size: 20
+
+# Limit to the latest X bars for training and testing
+# null to use the entire dataset
+bar_limit: 500
