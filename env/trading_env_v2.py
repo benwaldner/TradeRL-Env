@@ -64,7 +64,7 @@ class TradingEnvV2(gym.Env):
     metadata = {'render_modes': ['human']}
 
     # eps_length: To normalise the holding time of a position
-    def __init__(self, df, window_size, symbol, spread, point, eps_length = 253, render_mode=None):
+    def __init__(self, df, window_size, symbol, spread, point, eps_length = 253, render_mode=None, clear_trade=True):
         assert df.ndim == 2
 
         assert render_mode is None or render_mode in self.metadata["render_modes"]
@@ -81,6 +81,7 @@ class TradingEnvV2(gym.Env):
 
         self.writer = tf.summary.create_file_writer(f'logs/rl/{datetime.now().strftime("%Y_%m_%d_%H_%M")}')
         self.episode = 0
+        self.clear_trade = clear_trade
 
         # spaces
         self.action_space = spaces.Discrete(len(Actions))
@@ -128,7 +129,7 @@ class TradingEnvV2(gym.Env):
         self.episode += 1
         self.history = {}
         self._last_trades = self._trades
-        self._trades = []
+        if self.clear_trade: self._trades = []
 
         info = self._get_info()
         observation = self._get_observation()

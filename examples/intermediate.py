@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     # Create the Training Environment
     train_env = ForexEnvV2(
-        df=bars[:train_size], window_size=config['window_size'], unit_side='right',
+        df=bars[:train_size], window_size=config['window_size'], unit_side='right', clear_trade=True,
         point = point, bar_limit=config['bar_limit'], spread=spread, trade_fee=config['service_fee'],
         symbol=config["symbol"], normalise=1.0, normalise_path=f'data/{config["symbol"]}_scaler.pkl')
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     model = RecurrentPPO.load(f'output/RL_{config["symbol"]}_v2.ckpt')
 
     eval_env = ForexEnvV2(
-        df=bars[train_size:], window_size=config['window_size'], unit_side='right',
+        df=bars[train_size:], window_size=config['window_size'], unit_side='right', clear_trade=False,
         point = point, bar_limit=config['bar_limit'], spread=spread, trade_fee=config['service_fee'],
         symbol=config["symbol"], normalise=True, normalise_path=f'data/{config["symbol"]}_scaler.pkl')
     eval_env.set_model(model)

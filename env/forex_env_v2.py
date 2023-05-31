@@ -8,13 +8,13 @@ from util.ta import extract_features
 
 class ForexEnvV2(TradingEnvV2):
 
-    def __init__(self, df, window_size, symbol, unit_side='left', eps_length=253, spread=0.0003, point=10000, trade_fee=0.0003, bar_limit=None, render_mode=None, normalise=None, normalise_path=None):
+    def __init__(self, df, window_size, symbol, unit_side='left', eps_length=253, spread=0.0003, point=10000, trade_fee=0.0003, bar_limit=None, clear_trade=True, render_mode=None, normalise=None, normalise_path=None):
         assert unit_side.lower() in ['left', 'right']
         self.normalise = normalise
         self.normalise_path = normalise_path
         self.unit_side = unit_side.lower()
         self.bar_limit = bar_limit
-        super().__init__(df=df, window_size=window_size, symbol=symbol, eps_length=eps_length, render_mode=render_mode, spread=spread, point=point)
+        super().__init__(df=df, window_size=window_size, symbol=symbol, eps_length=eps_length, render_mode=render_mode, spread=spread, point=point, clear_trade=clear_trade)
 
         self.trade_fee = trade_fee  # unit in %
 
