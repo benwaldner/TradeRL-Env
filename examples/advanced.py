@@ -50,7 +50,7 @@ if __name__ == "__main__":
         early_stop_ratio=0.1    # Early Env Stopout (0.1 = current balance lower than 90% of init balance will reset env)
     )
 
-    model = RecurrentPPO('MultiInputLstmPolicy', env, policy_kwargs={ 'n_lstm_layers': 2, 'lstm_hidden_size': 256, })
+    model = RecurrentPPO('MultiInputLstmPolicy', env, policy_kwargs={ 'n_lstm_layers': 2, 'lstm_hidden_size': 256 }, tensorboard_log=f'./logs/advanced_{datetime.now().strftime("%Y%m%d_%H%M")}')
 
     # Calculate the Training Epochs
     learning_steps = env.total_steps() * 200

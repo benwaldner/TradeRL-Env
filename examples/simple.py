@@ -20,6 +20,7 @@ from sb3_contrib import ARS, QRDQN, RecurrentPPO, TQC, TRPO, MaskablePPO
 from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.evaluation import evaluate_policy
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 if __name__ == "__main__":
     config = get_config()
@@ -50,7 +51,7 @@ if __name__ == "__main__":
     if config['bar_limit'] is not None: learning_step = config['epochs'] * config['bar_limit']
     else: learning_step = config['epochs'] * train_size
 
-    model = RecurrentPPO('MlpLstmPolicy', env=train_env, policy_kwargs={ 'n_lstm_layers': 2 })
+    model = RecurrentPPO('MlpLstmPolicy', env=train_env, policy_kwargs={ 'n_lstm_layers': 2 }, tensorboard_log=f'./logs/simple_{datetime.now().strftime("%Y%m%d_%H%M")}')
     train_env.set_model(model)
     model.learn(total_timesteps=learning_step, log_interval=10, progress_bar=True)
     model.save(f'output/{config["symbol"]}_simple.ckpt')
@@ -58,7 +59,7 @@ if __name__ == "__main__":
     # Create the evaluation environment
     # For examples, we combine the evaluation script here
     # This part should be seperate from the training code
-    model = RecurrentPPO.load(f'output/RL_{config["symbol"]}_v1.ckpt')
+    model = RecurrentPPO.load(f'output/{config["symbol"]}_simple.ckpt')
 
     eval_env = ForexEnv(
         df=bars[train_size:], window_size=config['window_size'], unit_side='right', clear_trade=False,
