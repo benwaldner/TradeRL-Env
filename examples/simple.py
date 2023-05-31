@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     # Create the Training Environment
     train_env = ForexEnv(
-        df=bars[:train_size], window_size=config['window_size'], unit_side='right',
+        df=bars[:train_size], window_size=config['window_size'], unit_side='right', clear_trade=True,
         point = point, bar_limit=config['bar_limit'], spread=spread, trade_fee=config['service_fee'],
         symbol=config["symbol"], normalise=1.0, normalise_path=f'data/{config["symbol"]}_scaler.pkl')
 
@@ -51,19 +51,20 @@ if __name__ == "__main__":
     else: learning_step = config['epochs'] * train_size
 
     model = RecurrentPPO('MlpLstmPolicy', env=train_env, policy_kwargs={ 'n_lstm_layers': 2 })
+    train_env.set_model(model)
     model.learn(total_timesteps=learning_step, log_interval=10, progress_bar=True)
     model.save(f'output/{config["symbol"]}_simple.ckpt')
 
     # Create the evaluation environment
     # For examples, we combine the evaluation script here
     # This part should be seperate from the training code
-    model = RecurrentPPO.load(f'output/{config["symbol"]}_simple.ckpt')
+    model = RecurrentPPO.load(f'output/RL_{config["symbol"]}_v1.ckpt')
 
     eval_env = ForexEnv(
-        df=bars[train_size:], window_size=config['window_size'], unit_side='right',
+        df=bars[train_size:], window_size=config['window_size'], unit_side='right', clear_trade=False,
         point = point, bar_limit=config['bar_limit'], spread=spread, trade_fee=config['service_fee'],
         symbol=config["symbol"], normalise=True, normalise_path=f'data/{config["symbol"]}_scaler.pkl')
-
+    eval_env.set_model(model)
     mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=1, deterministic=True)
 
     # Get all trades

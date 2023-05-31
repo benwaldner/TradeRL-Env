@@ -32,7 +32,7 @@ class TradingEnv(gym.Env):
 
     metadata = {'render_modes': ['human']}
 
-    def __init__(self, df, window_size, symbol, spread, point, render_mode=None):
+    def __init__(self, df, window_size, symbol, spread, point, render_mode=None, clear_trade=True):
         assert df.ndim == 2
 
         assert render_mode is None or render_mode in self.metadata["render_modes"]
@@ -43,6 +43,7 @@ class TradingEnv(gym.Env):
         self.window_size = window_size
         self.spread = spread
         self.point = point
+        self.clear_trade = clear_trade
         self.prices, self.signal_features, self.dates = self._process_data()
         self.shape = (window_size, self.signal_features.shape[1],)
 
@@ -67,6 +68,7 @@ class TradingEnv(gym.Env):
         self._total_profit = None
         self._first_rendering = None
         self.history = None
+        self._best_score = 0
 
         # create cache for faster training
         self._observation_cache = []
@@ -92,7 +94,7 @@ class TradingEnv(gym.Env):
         self._total_reward = 0.
         self._total_profit = 1.  # unit
         self.episode += 1
-        self._trades = []
+        if self.clear_trade: self._trades = []
         self._first_rendering = True
         self.history = {}
 
@@ -121,11 +123,18 @@ class TradingEnv(gym.Env):
                 trades.loc[trades['position'] == 1, 'profit'] = (trades['closePrice'] - (trades['openPrice'] + self.spread)) * self.point
                 trades = trades.dropna()
                 trades['cashflow'] = trades['profit'].cumsum()
-
+                profit = trades['profit'].sum()
                 # Draw the Cashflow to the tensorboard
                 with self.writer.as_default():
                     for i, trade in trades['cashflow'].items():
                         tf.summary.scalar(f'trades/iteration-{self.episode}', trade, i)
+
+                # Update Model
+                if self._model is not None:
+                    if profit > self._best_score:
+                        print(f'Saving Model... [+{round(profit, 2)} pips]')
+                        self._model.save(f'output/RL_{self.symbol}_v1.ckpt')
+                        self._best_score = profit
 
         step_reward = self._calculate_reward(action)
         self._total_reward += step_reward
@@ -227,6 +236,8 @@ class TradingEnv(gym.Env):
 
     def pause_rendering(self):
         plt.show()
+
+    def set_model(self, model): self._model = model
 
 
     def _process_data(self):
